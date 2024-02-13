@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+
+{% block title %}Flasky - Login{% endblock %}
+{% block container %}
+    {{super()}}
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto shadow-lg p-3 mb-5 bg-white rounded border border-primary ">
+            {{ render_form(form) }}
+        </div>
+    </div>
+    
+{% endblock %}

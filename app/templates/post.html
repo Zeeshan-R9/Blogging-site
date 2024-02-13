@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import "_macros.html" as macros %}
+
+{% block container %}
+{{super()}}
+<div class="row justify-content-md-center">
+    <div class="col-md-7">
+        <h1>{{ viewed_post.title }}</h1>
+        {% if viewed_post.body_html %}
+        {{ viewed_post.body_html | safe }}
+        {% else %}
+        {{ viewed_post.body }}
+        {% endif %}
+
+    </div>
+</div>
+<div class="row justify-content-md-center">
+    <div class="col-md-9">
+        <h3>Related Posts</h3>
+        {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
+    </div>
+</div>
+
+{% endblock %}

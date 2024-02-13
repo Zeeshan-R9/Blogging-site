@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import "_macros.html" as macros %}
+
+{% block container %}
+{{super()}}
+<div class="row justify-content-md-center">
+    <div class="col-md-auto">
+        <h1>Hello!
+            {% if current_user.is_authenticated %}
+            {{ current_user.username }}
+            {% else %}
+            Stranger
+            {% endif %}
+        </h1>
+    </div>
+</div>
+<div class="row justify-content-md-center">
+    <div class="col-md-9">
+        <div>
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ render_form(form) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-md-center">
+    <div class="col-md-7">
+        {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
+    </div>
+</div>
+
+<div class="row justify-content-md-center">
+    <div class="col-md-7">
+        {{ macros.pagination_widget(pagination, '.index') }}
+    </div>
+</div>
+{% endblock %}

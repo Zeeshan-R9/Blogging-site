@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block container %}
+{{super()}}
+<div class="row justify-content-md-center">
+  <div class=" col-md-auto">
+    <div class="card mb-3" style="border: none;">
+      <div class="row g-0">
+        <div class="col-md-3">
+          <img src="{{user.gravatar(size=400)}}" class="img-fluid rounded-start" alt="">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h4 class="card-title">
+              {{ user.username|title }}
+              <h6>
+                <span class="badge bg-warning text-dark rounded-pill">
+                  {% if user.location %}
+                  <a href="http://maps.google.com/?q={{ user.location }}" style="color: white; text-decoration: none;">
+                    {{ user.location }}
+                  </a>
+                  {% endif %}
+                </span>
+              </h6>
+            </h4>
+            <p class="card-text">{% if user.about_me %}{{ user.about_me }}{% endif %}</p>
+            <p class="card-text"><small class="text-body-secondary">Member since {{
+                format_relative_time(user.member_since) }}</small></p>
+            <p class="card-text"><small class="text-body-secondary">Last seen {{ format_relative_time(user.last_seen) }}
+                ago.</small></p>
+            <a href="mailto:{{ user.email }}" class="btn btn-info">Send Mail</a>
+            {% if user == current_user %}
+            <a class="btn btn-dark" href="{{ url_for('.edit_profile') }}">
+              Edit Profile
+            </a>
+            {% endif %}
+            {% if current_user.is_administrator() %}
+            <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">
+              Edit Profile [Admin]
+            </a>
+            {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-md-center">
+  <div class="col-md-7">
+    {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
+  </div>
+</div>
+  {% endblock %}
