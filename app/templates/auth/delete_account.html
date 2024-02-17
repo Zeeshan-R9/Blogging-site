@@ -15,7 +15,6 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-inline">{{current_user.username}}</li>
                 <li class="list-group-item d-inline">{{current_user.email}}</li>
-                <li class="list-group-item d-inline">{{current_user.role.name}}</li>
             </ul>
             <div class="card-body">
                 {{ render_form(form, button_map={'yes_button': 'success', 'no_button': 'danger'}) }}
