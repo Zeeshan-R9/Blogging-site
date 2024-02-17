@@ -8,9 +8,12 @@ app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 migrate = Migrate(app, db)
 
 
+'''
+    The app is automatically imported and used as 'app', so there is no need to specify it here.
+'''
 @app.shell_context_processor
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role)
+    return dict(db=db, User=User, Role=Role)
 
 
 @app.cli.command('test')
@@ -30,3 +33,4 @@ def delete_records():
     
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=80)
+

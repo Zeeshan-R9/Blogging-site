@@ -27,6 +27,46 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=pendulum.now)
 
 
+
+'''
+    Index
+    -----
+        An index is essentially a data structure that provides a quick way to 
+        look up records in a table based on the values in one or more columns.
+
+    Indexing can make the filtering, sorting, and lookup of values a lot more easier.
+    We should index those columns that we use to filter data or sort data while
+    querying.
+
+    EXAMPLE:    
+        User.query.filter_by(username='john').first()
+
+    In the above example we are using the username to filter a User object so making this 
+    column indexed is useful for faster querying.
+
+    NOW, the index data structure can a B-Tree which looks something like 
+                                
+                                +------------------------+
+                                |         [D, David]      |
+                                +------------------------+
+                            /                             \
+        +------------------------+              +------------------------+
+        |     [B, Bob]            |              |      [F, Frank]         |
+        +------------------------+              +------------------------+
+        /               \                           /                \
+    +----------------+ +----------------+   +----------------+ +----------------+
+    | [A, Alice]     | | [C, Charlie]   |   | [E, Eva]       | | [G, Grace]      |
+    +----------------+ +----------------+   +----------------+ +----------------+
+
+    The above is the index of the username column.
+
+
+    JOIN
+    ----
+        A join is used to retrieve data from more than one table based on the conditions.
+        
+'''
+
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
@@ -94,7 +134,8 @@ class User(UserMixin, db.Model):
     passwd_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     confirmed = db.Column(db.Boolean, default=False)
-    posts = db.relationship('Post', backref='author', lazy='dynamic', cascade='all, delete-orphan')
+    posts = db.relationship('Post', backref='author',
+                            lazy='dynamic', cascade='all, delete-orphan')
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
@@ -105,7 +146,8 @@ class User(UserMixin, db.Model):
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
-    comments = db.relationship('Comment', backref='author', lazy='dynamic', cascade='all, delete-orphan')
+    comments = db.relationship(
+        'Comment', backref='author', lazy='dynamic', cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -114,12 +156,13 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        
 
     @property
     def followed_posts(self):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id)
-
+    
     @staticmethod
     def add_self_follows():
         for user in User.query.all():
@@ -160,6 +203,12 @@ class User(UserMixin, db.Model):
     def verify_passwd(self, password):
         return check_password_hash(self.passwd_hash, password)
 
+    '''
+        Flask-login requires the application to designate this function which will take a user_id
+        as a string. The @login_manger.user_loader decorator will register this function to get 
+        called when the flask-login needs to get the information about the logged in user from 
+        the database.
+    '''
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -203,7 +252,7 @@ class User(UserMixin, db.Model):
             return False
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
-
+    
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -221,8 +270,9 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=pendulum.now)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body_html = db.Column(db.Text)
-    comments = db.relationship('Comment', backref='post', lazy='dynamic', cascade='all, delete-orphan')
-    
+    comments = db.relationship(
+        'Comment', backref='post', lazy='dynamic', cascade='all, delete-orphan')
+
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
@@ -232,7 +282,6 @@ class Post(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True, attributes=allowed_attrs))
-
 
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)

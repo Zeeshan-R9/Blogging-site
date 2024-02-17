@@ -5,7 +5,6 @@ from ..models import Comment, Permission, Post
 
 from .forms import CommentForm, EditProfileAdminForm, EditProfileForm, PostForm
 from . import main
-from ..helper import format_relative_time
 from ..decorators import admin_required, permission_required
 from ..models import User, Role
 
@@ -31,6 +30,13 @@ def index():
     form = PostForm()
     if form.validate_on_submit():
         from .. import db
+        '''
+            The current_user variable from Flask-Login, like all context variables, 
+            is implemented as a thread-local proxy object. This object behaves like 
+            a user object but is really a thin wrapper that contains the actual
+            user object inside. The database needs a real user object, which is obtained 
+            by calling _get_current_object() on the proxy object.
+        '''
         post = Post(
             title=form.title.data,
             body=form.body.data,
@@ -51,9 +57,8 @@ def index():
         page=page, per_page=5,
         error_out=False)
     posts = pagination.items
-    return render_template('index.html', current_user=current_user, show_followed=show_followed, 
-                           form=form, posts=posts, pagination=pagination, 
-                           format_relative_time=format_relative_time)
+    return render_template('index.html', show_followed=show_followed, 
+                           form=form, posts=posts, pagination=pagination)
 
 
 @main.route('/user/<username>')
@@ -62,7 +67,7 @@ def user(username):
     if user is None:
         abort(404)
     posts = user.posts.order_by(Post.timestamp.desc()).all()
-    return render_template('user.html', user=user, format_relative_time=format_relative_time, posts=posts)
+    return render_template('user.html', user=user, posts=posts)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -136,12 +141,10 @@ def post(id):
                             error_out=False)
     comments = pagination.items
     return render_template('post.html', viewed_post=post,
-                           current_user=current_user,
                            form=form,
                            comments=comments,
                            posts=Post.query.order_by(
-                               Post.timestamp.desc())[:5],
-                           format_relative_time=format_relative_time)
+                               Post.timestamp.desc())[:5])
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -212,7 +215,7 @@ def followers(username):
                for item in pagination.items]
     return render_template('followers.html', user=user, title="Followers of",
                            endpoint='.followers', pagination=pagination,
-                           follows=follows, format_relative_time=format_relative_time)
+                           follows=follows)
 
 
 @main.route('/moderate')
@@ -225,8 +228,7 @@ def moderate():
                 error_out=False)
     comments = pagination.items
     return render_template('moderate.html', comments=comments,
-        pagination=pagination, page=page,
-        format_relative_time=format_relative_time)
+        pagination=pagination, page=page)
 
 
 @main.route('/moderate/enable/<int:id>')

@@ -7,15 +7,21 @@
   <div class=" col-md-auto">
     <div class="card mb-3" style="border: none;">
       <div class="row g-0">
-        <div class="col-md-3" style="border-radius: 50%; overflow: hidden;">
-          <img src="{{user.gravatar(size=400)}}" class="img-fluid rounded-start" >
+        <div class="col-md-3" style="border-radius: 50%; overflow: hidden; max-width: 300px; max-height: 300px;">
+          <img src="{{user.gravatar(size=300)}}" class="img-fluid rounded-start">
         </div>
         <div class="col-md-8">
           <div class="card-body">
             <h4 class="card-title">
               {{ user.username|title }}
               <h6>
-                <span class="badge bg-warning text-dark rounded-pill">
+                {% if current_user.is_authenticated and user != current_user and
+                user.is_following(current_user) %}
+                <span class="badge rounded-pill bg-light text-dark">Follows you</span>
+                {% endif %}
+              </h6>
+              <h6>
+                <span class="badge bg-warning text-dark">
                   {% if user.location %}
                   <a href="http://maps.google.com/?q={{ user.location }}" style="color: white; text-decoration: none;">
                     {{ user.location }}
@@ -25,8 +31,7 @@
               </h6>
             </h4>
             <p class="card-text">{% if user.about_me %}{{ user.about_me }}{% endif %}</p>
-            <p class="card-text"><small class="text-body-secondary">Joined {{
-                format_relative_time(user.member_since) }} ago.</small></p>
+            <p class="card-text"><small class="text-body-secondary">Member since {{user.member_since.date() }}.</small></p>
             <p class="card-text"><small class="text-body-secondary">Last seen {{ format_relative_time(user.last_seen) }}
                 ago.</small></p>
             <a href="mailto:{{ user.email }}" class="btn btn-info">Send Mail</a>
@@ -42,27 +47,20 @@
             {% endif %}
 
             {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-              {% if not current_user.is_following(user) %}
-                <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
-              {% else %}
-                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-secondary">Unfollow</a>
-              {% endif %}
+            {% if not current_user.is_following(user) %}
+            <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
+            {% else %}
+            <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-secondary">Unfollow</a>
+            {% endif %}
             {% endif %}
             <a href="{{ url_for('.followers', username=user.username) }}"">
-            <button type="button" class="btn btn-dark position-relative">
+            <button type=" button" class="btn btn-dark position-relative">
               Followers
               <span class="position-absolute top-0 start-100 translate-middle rounded-pill badge bg-success">
                 {{ user.followers.count() - 1}}
               </span>
-            </button>
+              </button>
             </a>
-            
-            
-            {% if current_user.is_authenticated and user != current_user and
-            user.is_following(current_user) %}
-            | <span class="label label-default">Follows you</span>
-            {% endif %}
-
             </ul>
           </div>
         </div>

@@ -1,7 +1,7 @@
 {% from 'bootstrap5/utils.html' import render_messages %}
 
 <!doctype html>
-<html lang="en" >
+<html lang="en">
 
 <head>
     {% block head %}
@@ -18,7 +18,6 @@
 </head>
 
 <body>
-    <!-- Your page content -->
     {% block container %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -66,19 +65,17 @@
                             <li><a class="dropdown-item" href="{{url_for('auth.change_email')}}">Change email</a></li>
                             <li><a class="dropdown-item" href="{{url_for('auth.delete_account')}}">Delete Account</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{url_for('auth.logout')}}">Log out</a>
+                            <li><a class="dropdown-item" href="{{url_for('auth.logout')}}">Sign Out</a>
                             </li>
                         </ul>
 
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{url_for('auth.login')}}">Log
-                            in</a>
+                        <a class="nav-link active" aria-current="page" href="{{url_for('auth.login')}}">Sign In</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{url_for('auth.register')}}">Create New
-                            Account</a>
+                        <a class="nav-link active" aria-current="page" href="{{url_for('auth.register')}}">Sign Up</a>
                     </li>
                     {% endif %}
 
@@ -88,12 +85,6 @@
         </div>
     </nav>
     {{ render_messages(dismiss_animate=True, dismissible=True) }}
-    <div class="row">
-        <div class="col" style="visibility: hidden;">
-            Spacing 
-        </div>
-      </div>
-    
 
     {% endblock %}
 

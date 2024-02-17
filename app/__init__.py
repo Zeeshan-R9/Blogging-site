@@ -4,7 +4,8 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 
 from config import config
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
+from .helper import format_relative_time
 from flask_pagedown import PageDown
 
 bootstrap = Bootstrap5()
@@ -44,10 +45,12 @@ def create_app(config_name='default'):
     from .auth import auth as auth_blueprint
 
     
-    # Context processors make variables globally available to all templates. The below will make Permission class available to all templetes
+    # Context processors make variables globally available to all templates. 
+    # The below will make Permission class available to all templetes
+    # Context processors make variables available to all templates during rendering
     @main_blueprint.app_context_processor
-    def inject_permissions():
-        return dict(Permission=Permission)
+    def inject_permissions_and_time_conversion():
+        return dict(Permission=Permission, format_relative_time=format_relative_time)
 
     
     '''

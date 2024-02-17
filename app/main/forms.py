@@ -38,6 +38,9 @@ class EditProfileAdminForm(FlaskForm):
                              for role in Role.query.order_by(Role.name).all()]
         self.user = user
 
+    '''
+        Any functions of the form 'validate_fieldName' will be called as validators on those fields.
+    '''
     def validate_email(self, field):
         if field.data != self.user.email and \
                 User.query.filter_by(email=field.data).first():
@@ -51,6 +54,15 @@ class EditProfileAdminForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 64)])
+    '''
+        PageDown, a client-side Markdown-to-HTML converter implemented in Java-
+        Script.
+
+        The markdown preview is added with the help of PageDown libraries so these
+        must be added to the html file. Fortunately, have a macro that adds all the
+        required files for us. So add this to your base template file'S script area.
+        {{ pagedown.include_pagedown() }}
+    '''
     body = PageDownField("What's on your mind?", validators=[DataRequired()],
                          render_kw={'style': 'height: 400px; margin-top: 10px;'})
     submit = SubmitField('Post', render_kw={'style': 'margin-top: 10px;'})

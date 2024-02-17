@@ -8,7 +8,8 @@
             <h1>Moderate Comments</h1>
             {% set moderate = True %}
             {% include '_comments.html' %}
-            {{ macros.pagination_widget(pagination, '.moderate') }}
-        </div>
+            
+                {{ macros.pagination_widget(pagination, '.moderate') }}
+            </div>
     </div>
 {% endblock %}
