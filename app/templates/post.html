@@ -8,16 +8,51 @@
     <div class="col-md-7">
         <h1>{{ viewed_post.title }}</h1>
         {% if viewed_post.body_html %}
-        {{ viewed_post.body_html | safe }}
+            {{ viewed_post.body_html | safe }}
         {% else %}
-        {{ viewed_post.body }}
+            {{ viewed_post.body }}
         {% endif %}
 
     </div>
 </div>
 <div class="row justify-content-md-center">
-    <div class="col-md-9">
-        <h3>Related Posts</h3>
+    <div class="col-md-7" style="padding-left: 35%;">
+        <div class="card mb-3" style="max-width: 300px; max-height: 80px;">
+            <div class="row g-0">
+              <div class="col-md-2">
+                <img src="{{viewed_post.author.gravatar()}}" class="img-fluid rounded-start" alt="...">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <a href="{{url_for('.user', username=viewed_post.author.username)}}" 
+                    style="text-decoration: none; color: black;">
+                        {{viewed_post.author.username}}
+                    </a>
+                  </h5>
+                  <!-- <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> -->
+                  <p class="card-text"><small class="text-muted">Last updated {{format_relative_time(viewed_post.timestamp)}} ago</small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
+
+<div class="row justify-content-md-center">
+  <div class="col-md-7">
+    <h5>Comments</h5>
+    {% if current_user.is_authenticated %}
+      {{render_form(form)}}
+    {% endif %}
+    
+    {% include '_comments.html' %}
+  </div>
+</div>
+
+<div class="row justify-content-md-center">
+    <div class="col-md-7">
+        <h3>Latest Posts</h3>
         {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
     </div>
 </div>

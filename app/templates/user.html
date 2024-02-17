@@ -25,8 +25,8 @@
               </h6>
             </h4>
             <p class="card-text">{% if user.about_me %}{{ user.about_me }}{% endif %}</p>
-            <p class="card-text"><small class="text-body-secondary">Member since {{
-                format_relative_time(user.member_since) }}</small></p>
+            <p class="card-text"><small class="text-body-secondary">Joined {{
+                format_relative_time(user.member_since) }} ago.</small></p>
             <p class="card-text"><small class="text-body-secondary">Last seen {{ format_relative_time(user.last_seen) }}
                 ago.</small></p>
             <a href="mailto:{{ user.email }}" class="btn btn-info">Send Mail</a>
@@ -40,6 +40,29 @@
               Edit Profile [Admin]
             </a>
             {% endif %}
+
+            {% if current_user.can(Permission.FOLLOW) and user != current_user %}
+              {% if not current_user.is_following(user) %}
+                <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
+              {% else %}
+                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-secondary">Unfollow</a>
+              {% endif %}
+            {% endif %}
+            <a href="{{ url_for('.followers', username=user.username) }}"">
+            <button type="button" class="btn btn-dark position-relative">
+              Followers
+              <span class="position-absolute top-0 start-100 translate-middle rounded-pill badge bg-success">
+                {{ user.followers.count() - 1}}
+              </span>
+            </button>
+            </a>
+            
+            
+            {% if current_user.is_authenticated and user != current_user and
+            user.is_following(current_user) %}
+            | <span class="label label-default">Follows you</span>
+            {% endif %}
+
             </ul>
           </div>
         </div>
@@ -52,4 +75,4 @@
     {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
   </div>
 </div>
-  {% endblock %}
+{% endblock %}

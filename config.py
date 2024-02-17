@@ -25,6 +25,7 @@ class DevelopmentConfig(Config):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'kfii dswl qwwb wgyi'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(base_dir, 'data-dev.sqlite')
+    FLASKY_COMMENTS_PER_PAGE = 10
 
 
 class TestingConfig(Config):

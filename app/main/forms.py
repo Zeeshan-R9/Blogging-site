@@ -4,11 +4,17 @@ from wtforms.validators import Length, DataRequired, Email, Regexp
 from ..models import Role, User
 from flask_pagedown.fields import PageDownField
 
+
 class EditProfileForm(FlaskForm):
     name = StringField('Real name', validators=[Length(0, 64)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
     submit = SubmitField('Submit')
+
+
+class CommentForm(FlaskForm):
+    body = StringField('', validators=[DataRequired()])
+    submit = SubmitField('Submit', render_kw={'style': 'margin-top: 10px; margin-bottom: 20px;'})
 
 
 class EditProfileAdminForm(FlaskForm):
@@ -47,4 +53,4 @@ class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 64)])
     body = PageDownField("What's on your mind?", validators=[DataRequired()],
                          render_kw={'style': 'height: 400px; margin-top: 10px;'})
-    submit = SubmitField('Submit', render_kw={'style': 'margin-top: 10px;'})
+    submit = SubmitField('Post', render_kw={'style': 'margin-top: 10px;'})

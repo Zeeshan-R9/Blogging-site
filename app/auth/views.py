@@ -117,7 +117,6 @@ def delete_account():
             db.session.commit()
             flash('Account deleted successfully!', 'info')
         return redirect(url_for('main.index'))
-    print(url_for('static', filename='images/delete.png', _external=True))
     return render_template('auth/delete_account.html', form=form, image_url=url_for('static', filename='images/delete.png'))
 
 
