@@ -134,7 +134,7 @@ def post(id):
         return redirect(url_for('.post', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
     if page == -1:
-        page = (post.comments.count() - 1) // \
+        page = post.comments.count() // \
             current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
                             page=page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
@@ -142,9 +142,11 @@ def post(id):
     comments = pagination.items
     return render_template('post.html', viewed_post=post,
                            form=form,
+                           pagination=pagination,
+                           endpoint='.post',
                            comments=comments,
                            posts=Post.query.order_by(
-                               Post.timestamp.desc())[:5])
+                           Post.timestamp.desc())[:5])
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])

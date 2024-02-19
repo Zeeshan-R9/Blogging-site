@@ -29,12 +29,12 @@
 {% endmacro %}
 
 {% macro post_links(posts, current_user, show_followed, format_relative_time) %}
-<div class="list-group list-group-flush">
+<div class="container" style="margin-top: 15px;">
   {% for post in posts %}
-  <li class="list-group-item">
+  <div class="row" style="margin-bottom: 15px;">
     <a href="{{ url_for('.post', id=post.id) }}" aria-current="true"
       style="text-decoration: none; color: rgb(87, 80, 80);">
-      <div class="card text-dark bg-light mb-3" style="border: none;">
+      <div class="card">
         <div class="row g-0">
           <div class="col-md-1" style="border-radius: 50%; overflow: hidden; max-height: 50px; max-width: 50px;">
             <img src="{{post.author.gravatar()}}" class="img-fluid rounded-start" alt="profile-img">
@@ -61,15 +61,16 @@
         </div>
       </div>
     </a>
-  </li>
+  </div>
   {% endfor %}
 </div>
 {% endmacro %}
 
 
 {% macro followers(user, follows, format_relative_time) %}
-<div class="list-group">
+<div class="container" style="margin-top: 15px;">
   {% for follower in follows %}
+  <div class="row">
       <a href="{{url_for('.user', username=follower['user'].username)}}" class="list-group-item list-group-item-action" style="border: none;">
         <div class="card mb-3" style="max-width: 540px;">
           <div class="row g-0">
@@ -87,7 +88,8 @@
           </div>
         </div>
       </a>
+    </div>
   {% endfor %}
-  
+</div>
 {% endmacro %}
 

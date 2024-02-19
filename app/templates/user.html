@@ -34,9 +34,9 @@
             <p class="card-text"><small class="text-body-secondary">Member since {{user.member_since.date() }}.</small></p>
             <p class="card-text"><small class="text-body-secondary">Last seen {{ format_relative_time(user.last_seen) }}
                 ago.</small></p>
-            <a href="mailto:{{ user.email }}" class="btn btn-info">Send Mail</a>
+            <a href="mailto:{{ user.email }}" class="btn btn-success">Send Mail</a>
             {% if user == current_user %}
-            <a class="btn btn-dark" href="{{ url_for('.edit_profile') }}">
+            <a class="btn btn-primary" href="{{ url_for('.edit_profile') }}">
               Edit Profile
             </a>
             {% endif %}

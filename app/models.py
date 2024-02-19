@@ -27,7 +27,6 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=pendulum.now)
 
 
-
 '''
     Index
     -----
@@ -64,8 +63,51 @@ class Follow(db.Model):
     JOIN
     ----
         A join is used to retrieve data from more than one table based on the conditions.
+
+    lazy Option
+    -----------
+    In SQLAlchemy, including Flask-SQLAlchemy, "lazy loading" refers 
+    to how relationships between tables are loaded. By default, relationships 
+    are lazy-loaded, which means that the related data 
+    is only loaded from the database when you access the attribute.
+
+
+    Lazy loading(default):
+    ---------------------
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        posts = db.relationship('Post', lazy='select')
+
+    In this example, lazy='select' is the default behavior. It means 
+    that when you access the posts attribute of a User instance, 
+    a separate SELECT query will be executed to fetch the related Post objects.
+
+    Eager loading:
+    -------------
+    You can change the lazy-loading behavior to "eager loading," 
+    which means that the related data is loaded at the same time as the main query.
+
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        posts = db.relationship('Post', lazy='joined')
+
+    In this case, if you retrieve a User instance, the 
+    related Post instances will be loaded with a JOIN query
+
+    Disable loading
+    ---------------
+    If you want to disable lazy loading entirely and always 
+    fetch the related data, you can use lazy='dynamic'.
+    This returns a query object that you can further refine.
+
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        posts = db.relationship('Post', lazy='dynamic')
+
+
         
 '''
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -156,13 +198,12 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
-        
 
     @property
     def followed_posts(self):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id)
-    
+
     @staticmethod
     def add_self_follows():
         for user in User.query.all():
@@ -252,7 +293,7 @@ class User(UserMixin, db.Model):
             return False
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
-    
+
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -277,7 +318,7 @@ class Post(db.Model):
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p', 'img']
+                        'h1', 'h2', 'h3', 'p', 'img', 'div']
         allowed_attrs = {'img': ['src', 'alt']}
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),

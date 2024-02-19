@@ -7,23 +7,27 @@ from wtforms import ValidationError
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Keep me logged in')
-    submit = SubmitField('Log In')
+                                             Email()], render_kw={'style': 'margin-top: 15px;'})
+    password = PasswordField('Password', validators=[DataRequired()],
+                             render_kw={'style': 'margin-top: 15px;'})
+    remember_me = BooleanField('Keep me logged in', render_kw={'style': 'margin-top: 15px;'})
+    submit = SubmitField('Log In', render_kw={'style': 'margin-top: 15px;'})
 
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+                                             Email()], render_kw={'style': 'margin-top: 15px;'})
     username = StringField('Username', validators=[
         DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                               'Usernames must have only letters, '
-                                              'numbers, dots or underscores')])
+                                              'numbers, dots or underscores')],
+                                              render_kw={'style': 'margin-top: 15px;'})
     password = PasswordField('Password', validators=[
-        DataRequired(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Register')
+        DataRequired(), EqualTo('password2', message='Passwords must match.')],
+        render_kw={'style': 'margin-top: 15px;'})
+    password2 = PasswordField('Confirm password', validators=[DataRequired()],
+                              render_kw={'style': 'margin-top: 15px;'})
+    submit = SubmitField('Register', render_kw={'style': 'margin-top: 15px;'})
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
@@ -39,15 +43,17 @@ class RegistrationForm(FlaskForm):
 
 class PasswdChangeForm(FlaskForm):
     password = PasswordField('New Password', validators=[
-        DataRequired(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Change')
+        DataRequired(), EqualTo('password2', message='Passwords must match.')],
+        render_kw={'style': 'margin-top: 15px;'})
+    password2 = PasswordField('Confirm password', validators=[DataRequired()],
+                              render_kw={'style': 'margin-top: 15px;'})
+    submit = SubmitField('Change',render_kw={'style': 'margin-top: 15px;'})
 
 
 class ChangeEmailForm(FlaskForm):
     email = StringField('New Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
-    submit = SubmitField('Change')
+                                             Email()], render_kw={'style': 'margin-top: 15px;'})
+    submit = SubmitField('Change', render_kw={'style': 'margin-top: 15px;'})
 
 
 class YesNoForm(FlaskForm):

@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from .helper import format_relative_time
 from flask_pagedown import PageDown
 
+
 bootstrap = Bootstrap5()
 mail = Mail()
 

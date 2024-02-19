@@ -4,7 +4,7 @@
 
 {% block container %}
 {{super()}}
-<div class="row justify-content-md-center">
+<div class="row justify-content-md-center" style="margin-top: 20px;">
   <div class="col-md-7">
     <h1>{{ viewed_post.title }}</h1>
     {% if viewed_post.body_html %}
@@ -53,9 +53,7 @@
 
 <div class="row justify-content-md-center">
   <div class="col-md-7">
-    <h3>Latest Posts</h3>
-    {{ macros.post_links(posts=posts, current_user=current_user, format_relative_time=format_relative_time) }}
+    {{macros.pagination_widget(pagination, endpoint, id=viewed_post.id)}}
   </div>
 </div>
-
 {% endblock %}
