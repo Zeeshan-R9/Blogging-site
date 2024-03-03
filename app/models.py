@@ -2,7 +2,9 @@ import hashlib
 import bleach
 from markdown import markdown
 import pendulum
-from flask import current_app
+from flask import current_app, url_for
+
+from app.exceptions import ValidationError
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedSerializer as Serializer
@@ -13,7 +15,7 @@ from . import login_manager
 class Permission:
     FOLLOW = 0x01
     COMMENT = 0x02
-    WRITE_ARTICLES = 0x04
+    WRITE = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
@@ -199,6 +201,41 @@ class User(UserMixin, db.Model):
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
 
+    def to_json(self):
+        json_user = {
+        #'url': url_for('api.get_user', id=self.id),
+        'username': self.username,
+        'member_since': self.member_since,
+        'last_seen': self.last_seen,
+        #'posts_url': url_for('api.get_user_posts', id=self.id),
+        #'followed_posts_url': url_for('api.get_user_followed_posts',
+        #id=self.id),
+        'post_count': self.posts.count()
+        }
+        return json_user
+    
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        return Post(body=body)
+    
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'],
+        expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
+
+    
     @property
     def followed_posts(self):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
@@ -313,6 +350,19 @@ class Post(db.Model):
     body_html = db.Column(db.Text)
     comments = db.relationship(
         'Comment', backref='post', lazy='dynamic', cascade='all, delete-orphan')
+
+
+    def to_json(self):
+        json_post = {
+        'url': url_for('api.get_post', id=self.id),
+        'body': self.body,
+        'body_html': self.body_html,
+        'timestamp': self.timestamp,
+        #'author_url': url_for('api.get_user', id=self.author_id),
+        #'comments_url': url_for('api.get_post_comments', id=self.id),
+        'comment_count': self.comments.count()
+        }
+        return json_post
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):

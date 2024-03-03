@@ -27,6 +27,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(base_dir, 'data-dev.sqlite')
     FLASKY_COMMENTS_PER_PAGE = 5
+    FLASKY_POSTS_PER_PAGE = 5
 
 
 class TestingConfig(Config):
