@@ -10,7 +10,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedSerializer as Serializer
 from flask_login import AnonymousUserMixin, UserMixin
 from . import login_manager
-
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+from bs4 import BeautifulSoup
+from pygments.lexers import guess_lexer
 
 class Permission:
     FOLLOW = 0x01
@@ -124,7 +128,7 @@ class Comment(db.Model):
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
-                        'strong']
+                        'strong', 'pre']
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
@@ -366,13 +370,27 @@ class Post(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p', 'img', 'div']
-        allowed_attrs = {'img': ['src', 'alt']}
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True, attributes=allowed_attrs))
+        formatter = HtmlFormatter(style='tango', noclasses=True)
+        # allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+        #                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+        #                 'h1', 'h2', 'h3', 'p', 'img', 'div', 'span']
+        # allowed_attrs = {'img': ['src', 'alt']}
+        
+        body_html = value
+        soup = BeautifulSoup(body_html, 'html.parser')
+        pre_elements = soup.find_all('pre')
+        string_soup = str(soup)
+        
+        for pre_element in pre_elements:
+            language = pre_element['language']
+            lexer = get_lexer_by_name(language.lower())
+
+            code = pre_element.get_text().strip()
+
+            modified_code = highlight(code, lexer, formatter)
+            string_soup = string_soup.replace(str(pre_element).strip(), modified_code.strip())
+        
+        target.body_html =  markdown(string_soup, format='html')
 
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
