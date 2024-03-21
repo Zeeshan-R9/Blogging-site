@@ -6,7 +6,14 @@
 {{super()}}
 <div class="row justify-content-md-center" style="margin-top: 20px;">
   <div class="col-md-7">
-    <h1>{{ viewed_post.title }}</h1>
+    <h1>
+      {{ viewed_post.title }}
+      {% if current_user == viewed_post.author %}
+                  <a href="{{ url_for('.edit', id=viewed_post.id) }}">
+                    <span class="badge bg-success">Edit</span>
+                  </a>
+      {% endif %}
+    </h1>
     {% if viewed_post.body_html %}
     {{ viewed_post.body_html | safe }}
     {% else %}
@@ -29,6 +36,7 @@
                 style="text-decoration: none; color: black;">
                 {{viewed_post.author.username}}
               </a>
+              
             </h5>
             <!-- <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> -->
             <p class="card-text"><small class="text-muted">Last updated {{format_relative_time(viewed_post.timestamp)}}
