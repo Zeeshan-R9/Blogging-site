@@ -370,7 +370,7 @@ class Post(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        formatter = HtmlFormatter(style='tango', noclasses=True)
+        formatter = HtmlFormatter(style='tango', noclasses=True, lineos=True)
         # allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
         #                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
         #                 'h1', 'h2', 'h3', 'p', 'img', 'div', 'span']
