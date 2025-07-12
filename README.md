@@ -1,5 +1,4 @@
 
-```markdown
 # 📝 Flask Blogging Platform
 
 A full-featured blogging website built with [Flask](https://flask.palletsprojects.com/), inspired by Miguel Grinberg's Flask Mega-Tutorial.  
