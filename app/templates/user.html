@@ -7,9 +7,11 @@
   <div class=" col-md-auto">
     <div class="card mb-3" style="border: none;">
       <div class="row g-0">
-        <div class="col-md-3" style="border-radius: 50%; overflow: hidden; max-width: 300px; max-height: 300px;">
-          <img src="{{user.gravatar(size=300)}}" class="img-fluid rounded-start">
+        <div class="col-md-3 d-flex align-items-center justify-content-center">
+          <img src="{{ user.gravatar(size=400) }}" class="img-fluid"
+            style="width: 500px; height: 230px; border-radius: 50%; object-fit: cover;">
         </div>
+
         <div class="col-md-8">
           <div class="card-body">
             <h4 class="card-title">
@@ -31,7 +33,8 @@
               </h6>
             </h4>
             <p class="card-text">{% if user.about_me %}{{ user.about_me }}{% endif %}</p>
-            <p class="card-text"><small class="text-body-secondary">Member since {{user.member_since.date() }}.</small></p>
+            <p class="card-text"><small class="text-body-secondary">Member since {{user.member_since.date() }}.</small>
+            </p>
             <p class="card-text"><small class="text-body-secondary">Last seen {{ format_relative_time(user.last_seen) }}
                 ago.</small></p>
             <a href="mailto:{{ user.email }}" class="btn btn-success">Send Mail</a>
